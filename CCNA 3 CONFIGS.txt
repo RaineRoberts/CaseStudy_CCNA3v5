@@ -1,0 +1,1431 @@
+##############################################################
+# Addressing
+##############################################################
+
+HAMILTON_SITE_AREA_1
+###
+
+VLAN 10 - STAFF
+IPv4 = 192.168.10.1/24
+IPv6 = fd00:10::1/64
+ 
+VLAN 20 - CORPORATE
+IPv4 = 192.168.20.1/24
+IPv6 = fd00:20::1/64
+
+VLAN 30 - IT
+IPv4 = 192.168.30.1/24
+IPv6 = fd00:30::1/64
+
+VLAN 99 - NATIVE
+
+VLAN 199 - ADMIN_DOWN
+
+VLAN 2 - OUTSIDE
+IPv4 - 192.168.254.0/30
+
+R1: 192.168.254.1/30
+Loopback - 3.3.3.3/32
+
+R2: 192.168.254.2/30
+Loopback2 - 4.4.4.4/32 
+
+Default Gateway (Standby IP) - 192.168.1.1
+
+
+
+TAURANGA_SITE_AREA_2
+###
+
+VLAN 10 - STAFF
+IPv4 = 192.168.10.1/24
+IPv6 = fd00:10::1/64
+ 
+VLAN 20 - CORPORATE
+IPv4 = 192.168.20.1/24
+IPv6 = fd00:20::1/64
+
+VLAN 30 - IT
+IPv4 = 192.168.30.1/24
+IPv6 = fd00:30::1/64
+
+VLAN 99 - NATIVE
+
+VLAN 199 - ADMIN_DOWN
+
+VLAN 2 - OUTSIDE
+IPv4 - 172.16.254.0/30
+
+R1: 192.168.1.2/30
+Loopback - 5.5.5.5/32
+
+R2: 192.168.2.1/30
+Loopback2 - 6.6.6.6/32 
+
+Default Gateway (Standby IP) - 192.168.1.1
+ 
+
+
+##############################################################
+# Interfaces Access Switch 1 + 2
+##############################################################
+
+interface FastEthernet0/1
+switchport access vlan 10
+switchport mode access
+
+interface FastEthernet0/2
+switchport access vlan 20
+switchport mode access 
+
+interface FastEthernet0/3
+switchport access vlan 30
+switchport mode access
+
+interface range GigabitEthernet0/1-2
+switchport trunk native vlan 99
+switchport mode trunk
+
+
+
+##############################################################
+# Interface Access Switch 3
+##############################################################
+
+interface range FastEthernet0/1-3
+switchport access vlan 30
+switchport mode access 
+
+interface range GigabitEthernet0/1-2
+switchport trunk native vlan 99
+switchport mode trunk
+
+
+
+##############################################################
+# VLAN Access / Core 3 + 4
+##############################################################
+
+Vlan 10 
+Name STAFF 
+Exit 
+Interface vlan 10 
+Description STAFF 
+Exit
+ 
+Vlan 20 
+Name CORPORATE 
+Exit 
+Interface vlan 20 
+Description CORPORATE 
+Exit
+ 
+Vlan 30 
+Name IT 
+Exit 
+Interface vlan 30 
+Description IT 
+Exit
+
+Vlan 40 
+Name SERVICE 
+Exit 
+Interface vlan 40 
+Description IT 
+Exit
+ 
+Vlan 99 
+Name NATIVE 
+Exit 
+Interface vlan 99 
+Description NATIVE 
+Exit 
+
+Vlan 199 
+Name ADMIN_DOWN 
+Exit 
+Interface vlan 199 
+Description ADMIN_DOWN 
+Exit 
+
+
+
+##############################################################
+# Interface Core Switch 3 + 4
+##############################################################
+
+interface range GigabitEthernet1/0/1-3, GigabitEthernet1/0/8
+switchport trunk native vlan 99
+switchport mode trunk
+
+interface range GigabitEthernet1/0/6-7
+switchport trunk native vlan 99
+switchport mode trunk
+channel-group 2 mode active
+
+interface Port-channel2
+switchport trunk native vlan 99
+switchport mode trunk
+
+
+
+##############################################################
+# VLAN Core Switch 1
+##############################################################
+
+Vlan 10 
+Name STAFF 
+Exit 
+Interface vlan 10 
+Description STAFF 
+Ip address 192.168.10.1 255.255.255.0
+Ipv6 address fd00:10::1/64
+Ipv6 nd managed-config-flag
+Ip helper-address 192.168.30.253 
+standby 10 ip 192.168.10.3
+standby 10 priority 200
+standby 10 preempt
+Exit
+ 
+Vlan 20 
+Name CORPORATE 
+Exit 
+Interface vlan 20 
+Description CORPORATE 
+Ip address 192.168.20.1 255.255.255.0
+Ipv6 address fd00:20::1/64
+Ipv6 nd managed-config-flag
+Ip helper-address 192.168.30.253 
+standby 20 ip 192.168.20.3
+standby 20 priority 200
+standby 20 preempt 
+Exit
+ 
+Vlan 30 
+Name IT 
+Exit 
+Interface vlan 30 
+Description IT 
+Ip address 192.168.30.1 255.255.255.0
+Ipv6 address fd00:30::1/64
+Ipv6 nd managed-config-flag
+Ip helper-address 192.168.30.253 
+standby 30 ip 192.168.30.3
+standby 30 priority 200
+standby 30 preempt
+Exit 
+ 
+Vlan 99 
+Name NATIVE 
+Exit 
+Interface vlan 99 
+Description NATIVE 
+Exit 
+
+Vlan 199 
+Name ADMIN_DOWN 
+Exit 
+Interface vlan 199 
+Description ADMIN_DOWN 
+Exit 
+
+HAM
+###
+
+Vlan 2
+Name OUTSIDE
+exit
+Interface vlan 2
+description Connection to Outside
+ip address 192.168.254.3 255.255.255.0
+exit
+
+TGA
+###
+
+Vlan 2
+Name OUTSIDE
+exit
+Interface vlan 2
+description Connection to Outside
+ip address 192.168.2.3 255.255.255.0
+exit
+
+
+##############################################################
+# VLANS Core Switch 2
+##############################################################
+
+Vlan 10 
+Name STAFF 
+Exit 
+Interface vlan 10 
+Description STAFF 
+Ip address 192.168.10.1 255.255.255.0
+Ipv6 address fd00:10::1/64
+Ipv6 nd managed-config-flag
+Ip helper-address 192.168.30.253  
+standby 10 ip 192.168.10.3
+Exit
+ 
+Vlan 20 
+Name CORPORATE 
+Exit 
+Interface vlan 20 
+Description CORPORATE 
+Ip address 192.168.20.1 255.255.255.0
+Ipv6 address fd00:20::1/64
+Ipv6 nd managed-config-flag
+Ip helper-address 192.168.30.253 
+standby 20 ip 192.168.20.3
+Exit
+ 
+Vlan 30 
+Name IT 
+Exit 
+Interface vlan 30 
+Description IT 
+Ip address 192.168.30.1 255.255.255.0
+Ipv6 address fd00:30::1/64
+Ipv6 nd managed-config-flag
+Ip helper-address 192.168.30.253 
+standby 30 ip 192.168.30.3
+Exit 
+ 
+Vlan 99 
+Name NATIVE 
+Exit 
+Interface vlan 99 
+Description NATIVE 
+Exit 
+
+HAM
+###
+
+Vlan 2
+Name OUTSIDE
+exit
+Interface vlan 2
+description Connection to Outside
+ip address 192.168.254.4 255.255.255.0
+exit
+
+TGA
+###
+
+Vlan 2
+Name OUTSIDE
+exit
+Interface vlan 2
+description Connection to Outside
+ip address 192.168.2.4 255.255.255.0
+exit
+
+
+
+##############################################################
+# Interface Core HAM Switch 1 + 2
+##############################################################
+
+ip routing
+ipv6 unicast-routing
+ip default-gateway 192.168.1.1
+
+Logging 192.168.30.254
+
+interface range GigabitEthernet1/0/6-7
+switchport trunk native vlan 99
+switchport mode trunk
+channel-group 2 mode active
+exit
+
+interface Port-channel2
+switchport trunk native vlan 99
+switchport mode trunk
+exit
+
+interface range GigabitEthernet1/0/1-5
+switchport trunk native vlan 99
+switchport mode trunk
+channel-group 1 mode active
+exit
+
+interface Port-channel1
+switchport trunk native vlan 99
+switchport mode trunk
+exit
+
+interface GigabitEthernet1/0/8
+switchport trunk native vlan 99
+switchport mode trunk
+exit
+
+interface range GigabitEthernet1/0/9-10
+switchport access vlan 2
+switchport mode access
+switchport nonegotiate
+no shutdown
+exit
+
+
+
+##############################################################
+# Interface Core TGA Switch 1 + 2
+##############################################################
+
+ip routing
+ipv6 unicast-routing
+ip default-gateway 192.168.1.1
+
+ip route 0.0.0.0 0.0.0.0 192.168.2.1 
+ip route 0.0.0.0 0.0.0.0 192.168.1.2 2
+ip route 0.0.0.0 0.0.0.0 192.168.2.2 
+ip route 0.0.0.0 0.0.0.0 192.168.1.1 
+
+Logging 192.168.30.254
+
+interface range GigabitEthernet1/0/6-7
+switchport trunk native vlan 99
+switchport mode trunk
+channel-group 2 mode active
+exit
+
+interface Port-channel2
+switchport trunk native vlan 99
+switchport mode trunk
+exit
+
+interface range GigabitEthernet1/0/1-5
+switchport trunk native vlan 99
+switchport mode trunk
+channel-group 1 mode active
+exit
+
+interface Port-channel1
+switchport trunk native vlan 99
+switchport mode trunk
+exit
+
+interface GigabitEthernet1/0/8
+switchport trunk native vlan 99
+switchport mode trunk
+exit
+
+interface range GigabitEthernet1/0/9-10
+switchport access vlan 2
+switchport mode access
+switchport nonegotiate
+no shutdown
+exit
+
+##############################################################
+# Router TGA 1
+##############################################################
+
+license boot module c2900 technology-package securityk9 
+
+no ip domain-lookup
+ip domain-name RaineCorp.com
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+security passwords min-length 8
+username admin secret cisco123
+line vty 0 15
+login local
+transport input ssh
+exitservice password-encryption
+ssh version 2
+banner motd % Welcome to RaineCorp Router_TGA_1. Unauthorized Access is Prohibited %
+crypto key generate rsa general-keys modulus 2048
+lldp run
+cdp run
+ntp authentication-key 1 md5 cisco123
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.30.252 key 1
+
+
+interface gigabitEthernet 0/1
+description Connection to SWITCH_TGA_CORE_1
+ip address 192.168.1.2 255.255.255.0
+standby 5 priority 100
+standby 5 ip 192.168.1.1
+ip nat inside
+no shutdown
+exit
+
+interface gigabitEthernet 0/2
+description Connection to SWITCH_TGA_CORE_2
+ip address 192.168.2.1 255.255.255.0
+standby 5 priority 90
+standby 5 ip 192.168.1.1
+ip nat inside
+no shutdown
+exit
+
+
+interface gigabitEthernet 0/0
+description Connection to ROUTER_TGA_2
+ip address 172.16.1.1 255.255.255.252
+no shutdown
+exit
+
+interface serial 0/0/1
+description connection to TELECOM_ROUTER
+ip address 50.50.50.2 255.255.255.252
+ip nat outside
+no shutdown
+exit
+
+interface serial 0/0/0
+description conenction to VODAFONE_ROUTER
+ip address 70.70.70.2 255.255.255.252
+ip nat outside
+no shutdown
+exit
+
+interface Lo0
+description TGA_1_Loopback
+ip address 5.5.5.5 255.255.255.255
+no shutdown
+exit
+
+ip access-list standard NAT
+permit 192.168.1.0 0.0.0.255
+exit
+
+ip nat inside source list NAT interface serial 0/0/0 overload
+ip nat inside source list NAT interface serial 0/0/1 overload
+
+ip route 0.0.0.0 0.0.0.0 50.50.50.1 1
+ip route 1.1.1.1 255.255.255.255 Serial0/0/1 1
+ip route 50.50.50.0 255.255.255.252 Serial0/0/1 1
+
+ip route 0.0.0.0 0.0.0.0 70.70.70.1 1
+ip route 2.2.2.2 255.255.255.255 Serial0/0/0 1
+ip route 70.70.70.0 255.255.255.252 serial0/0/0 1
+
+
+router ospf 1
+ router-id 5.5.5.5
+ auto-cost reference-bandwidth 10000
+ network 5.5.5.5 0.0.0.0 area 0
+ network 172.16.1.0 0.0.0.3 area 2
+ network 192.168.1.0 0.0.0.255 area 2
+ network 192.168.2.0 0.0.0.255 area 2
+ network 50.50.50.0 0.0.0.3 area 0
+ network 70.70.70.0 0.0.0.3 area 0
+ passive-interface GigabitEthernet0/1
+ passive-interface GigabitEthernet0/2
+ passive-interface Loopback0
+ area 0 authentication message-digest
+exit
+
+interface GigabitEthernet0/0
+ ip ospf hello-interval 5
+ ip ospf dead-interval 20
+ ip ospf priority 90
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/0/0
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/0/1
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+
+
+##############################################################
+# Router TGA 2
+##############################################################
+
+license boot module c2900 technology-package securityk9 
+
+no ip domain-lookup
+ip domain-name RaineCorp.com
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+security passwords min-length 8
+username admin secret cisco123
+line vty 0 15
+login local
+transport input ssh
+exitservice password-encryption
+ssh version 2
+banner motd % Welcome to RaineCorp Router_TGA_2. Unauthorized Access is Prohibited %
+crypto key generate rsa general-keys modulus 2048
+lldp run
+cdp run
+ntp authentication-key 1 md5 cisco123
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.30.252 key 1
+
+
+interface gigabitEthernet 0/2
+description Connection to SWITCH_HAM_CORE_1
+ip address 192.168.1.2 255.255.255.0
+standby 5 priority 100
+standby 5 ip 192.168.1.1
+ip nat inside
+no shutdown
+exit
+
+interface gigabitEthernet 0/1
+description Connection to SWITCH_HAM_CORE_2
+ip address 192.168.2.1 255.255.255.0
+standby 5 priority 90
+standby 5 ip 192.168.1.1
+ip nat inside
+no shutdown
+exit
+
+interface gigabitEthernet 0/0
+description Connection to ROUTER_HAM_1
+ip address 172.16.1.2 255.255.255.252
+no shutdown
+exit
+
+interface serial 0/0/0
+description connection to TELECOM_ROUTER
+ip address 60.60.60.2 255.255.255.252
+ip nat outside
+no shutdown
+exit
+
+interface serial 0/0/1
+description conenction to VODAFONE_ROUTER
+ip address 80.80.80.2 255.255.255.252
+ip nat outside
+no shutdown
+exit
+
+interface Lo0
+description TGA_2_Loopback
+ip address 6.6.6.6 255.255.255.255
+no shutdown
+exit
+
+ip access-list standard NAT
+permit 192.168.1.0 0.0.0.255
+exit
+
+ip nat inside source list NAT interface serial 0/0/0 overload
+ip nat inside source list NAT interface serial 0/0/1 overload
+
+ip route 0.0.0.0 0.0.0.0 80.80.80.1 1
+ip route 2.2.2.2 255.255.255.255 Serial0/0/1 1 
+ip route 80.80.80.0 255.255.255.252 Serial0/0/1 1 
+
+ip route 0.0.0.0 0.0.0.0 60.60.60.1 1
+ip route 1.1.1.1 255.255.255.255 Serial0/0/0 1
+ip route 60.60.60.0 255.255.255.252 Serial0/0/0 1
+
+
+router ospf 1
+ router-id 6.6.6.6
+ auto-cost reference-bandwidth 10000
+ network 6.6.6.6 0.0.0.0 area 0
+ network 172.16.1.0 0.0.0.3 area 2
+ network 192.168.1.0 0.0.0.255 area 2
+ network 192.168.2.0 0.0.0.255 area 2
+ network 60.60.60.0 0.0.0.3 area 0
+ network 80.80.80.0 0.0.0.3 area 0
+ passive-interface GigabitEthernet0/1
+ passive-interface GigabitEthernet0/2
+ passive-interface Loopback0
+ area 0 authentication message-digest
+exit
+
+interface GigabitEthernet0/0
+ ip ospf hello-interval 5
+ ip ospf dead-interval 20
+ ip ospf priority 90
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/0/0
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/0/1
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+
+##############################################################
+# Router HAM 1
+##############################################################
+
+license boot module c2900 technology-package securityk9 
+
+no ip domain-lookup
+ip domain-name RaineCorp.com
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+security passwords min-length 8
+username admin secret cisco123
+line vty 0 15
+login local
+transport input ssh
+exitservice password-encryption
+ssh version 2
+banner motd % Welcome to RaineCorp Router_HAM_1. Unauthorized Access is Prohibited %
+crypto key generate rsa general-keys modulus 2048
+lldp run
+cdp run
+ntp authentication-key 1 md5 cisco123
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.30.252 key 1
+
+
+interface gigabitEthernet 0/1
+description Connection to SWITCH_HAM_CORE_1
+ip address 192.168.254.1 255.255.255.0
+standby 5 priority 100
+standby 5 ip 192.168.1.1
+ip nat inside
+no shutdown
+exit
+
+interface gigabitEthernet 0/2
+description Connection to SWITCH_HAM_CORE_2
+ip address 192.168.255.1 255.255.255.0
+standby 5 priority 90
+standby 5 ip 192.168.1.1
+ip nat inside
+no shutdown
+exit
+
+interface gigabitEthernet 0/0
+description Connection to ROUTER_HAM_2
+ip address 172.16.1.1 255.255.255.252
+no shutdown
+exit
+
+interface serial 0/0/0
+description connection to TELECOM_ROUTER
+ip address 10.10.10.2 255.255.255.252
+ip nat outside
+no shutdown
+exit
+
+interface serial 0/0/1
+description conenction to VODAFONE_ROUTER
+ip address 20.20.20.2 255.255.255.252
+ip nat outside
+no shutdown
+exit
+
+interface Lo0
+description HAM_1_Loopback
+ip address 3.3.3.3 255.255.255.255
+no shutdown
+exit
+
+ip access-list standard NAT
+permit 192.168.1.0 0.0.0.255
+permit 192.168.255.0 0.0.0.255
+permit 192.168.254.0 0.0.0.255
+exit
+
+ip nat inside source list NAT interface serial 0/0/0 overload
+ip nat inside source list NAT interface serial 0/0/1 overload
+
+ip route 0.0.0.0 0.0.0.0 10.10.10.1 1
+ip route 1.1.1.1 255.255.255.255 Serial0/0/0 
+ip route 10.10.10.0 255.255.255.252 Serial0/0/0 
+
+ip route 0.0.0.0 0.0.0.0 20.20.20.1 1
+ip route 2.2.2.2 255.255.255.255 Serial0/0/1 
+ip route 20.20.20.0 255.255.255.252 Serial0/0/1 
+
+
+router ospf 1
+ router-id 3.3.3.3
+ auto-cost reference-bandwidth 10000
+ network 3.3.3.3 0.0.0.0 area 0
+ network 172.16.1.0 0.0.0.3 area 1
+ network 192.168.255.0 0.0.0.255 area 1
+ network 192.168.254.0 0.0.0.255 area 1
+ network 10.10.10.0 0.0.0.3 area 0
+ network 20.20.20.0 0.0.0.3 area 0
+ passive-interface Loopback0
+ area 0 authentication message-digest
+ exit
+
+interface GigabitEthernet0/0
+ ip ospf hello-interval 5
+ ip ospf dead-interval 20
+ ip ospf priority 100
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+ exit
+
+interface GigabitEthernet0/1
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+ exit
+
+interface Serial0/0/0
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+ exit
+
+interface Serial0/0/1
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+ exit
+
+crypto isakmp policy 10
+ encr aes
+ hash sha
+ authentication pre-share
+ group 1
+ lifetime 86400
+exit
+
+
+##############################################################
+# Router HAM 2
+##############################################################
+
+license boot module c2900 technology-package securityk9 
+
+no ip domain-lookup
+ip domain-name RaineCorp.com
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+security passwords min-length 8
+username admin secret cisco123
+line vty 0 15
+login local
+transport input ssh
+exitservice password-encryption
+ssh version 2
+banner motd % Welcome to RaineCorp Router_HAM_2. Unauthorized Access is Prohibited %
+crypto key generate rsa general-keys modulus 2048
+lldp run
+cdp run
+ntp authentication-key 1 md5 cisco123
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.30.252 key 1
+
+
+interface gigabitEthernet 0/2
+description Connection to SWITCH_HAM_CORE_1
+ip address 192.168.255.2 255.255.255.0
+standby 5 priority 100
+standby 5 ip 192.168.1.1
+ip nat inside
+no shutdown
+exit
+
+interface gigabitEthernet 0/1
+description Connection to SWITCH_HAM_CORE_2
+ip address 192.168.254.2 255.255.255.0
+standby 5 priority 90
+standby 5 ip 192.168.1.1
+ip nat inside
+no shutdown
+exit
+
+interface gigabitEthernet 0/0
+description Connection to ROUTER_HAM_1
+ip address 172.16.1.2 255.255.255.252
+no shutdown
+exit
+
+interface serial 0/0/1
+description connection to TELECOM_ROUTER
+ip address 30.30.30.2 255.255.255.252
+ip nat outside
+no shutdown
+exit
+
+interface serial 0/0/0
+description conenction to VODAFONE_ROUTER
+ip address 40.40.40.2 255.255.255.252
+ip nat outside
+no shutdown
+exit
+
+interface Lo0
+description HAM_2_Loopback
+ip address 4.4.4.4 255.255.255.255
+no shutdown
+exit
+
+ip access-list standard NAT
+permit 192.168.1.0 0.0.0.255
+permit 192.168.255.0 0.0.0.255
+permit 192.168.254.0 0.0.0.255
+exit
+
+ip nat inside source list NAT interface serial 0/0/0 overload
+ip nat inside source list NAT interface serial 0/0/1 overload
+
+ip route 0.0.0.0 0.0.0.0 40.40.40.1 1
+ip route 2.2.2.2 255.255.255.255 Serial0/0/0 
+ip route 40.40.40.0 255.255.255.252 Serial0/0/0
+ 
+ip route 0.0.0.0 0.0.0.0 30.30.30.1 1
+ip route 1.1.1.1 255.255.255.255 Serial0/0/1 
+ip route 30.30.30.0 255.255.255.252 Serial0/0/1 
+
+router ospf 1
+ router-id 4.4.4.4
+ auto-cost reference-bandwidth 10000
+ network 4.4.4.4 0.0.0.0 area 0
+ network 172.16.1.0 0.0.0.3 area 1
+ network 192.168.255.0 0.0.0.255 area 1
+ network 192.168.254.0 0.0.0.255 area 1
+ network 30.30.30.0 0.0.0.3 area 0
+ network 40.40.40.0 0.0.0.3 area 0
+ passive-interface GigabitEthernet0/1
+ passive-interface GigabitEthernet0/2
+ passive-interface Loopback0
+ area 0 authentication message-digest
+exit
+
+interface GigabitEthernet0/0
+ ip ospf hello-interval 5
+ ip ospf dead-interval 20
+ ip ospf priority 90
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/0/0
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/0/1
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+
+
+##############################################################
+# Access Lists
+##############################################################
+
+Core Switch ACL Deny SSH to DG for VLAN 10
+###
+
+ip access-list extended DENY_SSH
+ deny tcp 192.168.10.0 0.0.0.255 host 192.168.254.1 eq 22
+ permit ip any any
+exit
+ 
+interface vlan 10
+ ip access-group DENY_SSH in
+exit
+
+
+Router ACL Deny HTTPS for VLAN 20
+###
+
+ip access-list extended DENY_HTTPS
+ deny tcp 192.168.20.0 0.0.0.255 any eq 443
+ permit ip any any
+exit
+ 
+interface serial0/0/0
+ ip access-group DENY_HTTPS out
+exit
+
+
+
+##############################################################
+# GRE IPsec VPN
+##############################################################
+
+HAM 
+###
+
+interface Tunnel0
+ description GRE Tunnel to TGA
+ ip address 192.168.100.1 255.255.255.252
+ tunnel source 10.10.10.2
+ tunnel destination 50.50.50.2
+exit
+
+crypto isakmp policy 10
+ encr aes
+ hash sha
+ authentication pre-share
+ group 1
+ lifetime 86400
+exit
+
+crypto isakmp key cisco123 address 50.50.50.2
+crypto isakmp key cisco123 address 10.10.10.2
+
+crypto ipsec transform-set GRE-IPSec esp-aes esp-sha-hmac
+
+crypto map VPN-MAP 10 ipsec-isakmp
+ set peer 50.50.50.2
+ set transform-set GRE-IPSec
+ match address GRE-TRAFFIC
+exit
+
+ip access-list extended GRE-TRAFFIC
+ permit gre host 10.10.10.2 host 50.50.50.2
+exit
+
+interface Serial0/0/0
+ crypto map VPN-MAP
+exit
+
+
+
+TGA
+###
+
+interface Tunnel0
+ description GRE Tunnel to HAM
+ ip address 192.168.100.2 255.255.255.252
+ tunnel source 10.10.10.2 
+ tunnel destination 50.50.50.2
+exit
+
+crypto isakmp policy 10
+ encr aes
+ hash sha
+ authentication pre-share
+ group 1
+ lifetime 86400
+exit
+
+crypto isakmp key cisco123 address 50.50.50.2
+crypto isakmp key cisco123 address 10.10.10.2
+
+crypto ipsec transform-set GRE-IPSec esp-aes esp-sha-hmac
+
+crypto map VPN-MAP 10 ipsec-isakmp
+ set peer 10.10.10.2 
+ set transform-set GRE-IPSec
+ match address GRE-TRAFFIC
+exit
+
+ip access-list extended GRE-TRAFFIC
+ permit gre host 50.50.50.2 host 10.10.10.2 
+exit
+
+interface Serial0/0/0
+ crypto map VPN-MAP
+exit
+
+
+
+##############################################################
+# TELECOM Router
+##############################################################
+
+no ip domain-lookup
+ip domain-name TELECOM.com
+hostname TELECOM_ROUTER
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+security passwords min-length 8
+username admin secret cisco123
+line vty 0 15
+login local
+transport input ssh
+exit
+service password-encryption
+ssh version 2
+banner motd % Welcome to TELECOM. Unauthorized Access is Prohibited %
+crypto key generate rsa general-keys modulus 2048
+
+
+interface serial0/0/0
+description Connection to Router_HAM_1
+ip address 10.10.10.1 255.255.255.252
+no shutdown
+exit
+
+interface serial0/0/1
+description Connection to Router_TGA_1
+ip address 50.50.50.1 255.255.255.252
+no shutdown
+exit
+
+interface serial0/1/0
+description Connection to Router_HAM_2
+ip address 30.30.30.1 255.255.255.252
+no shutdown
+exit
+
+interface serial0/1/1
+description Connection to Router_TGA_2
+ip address 60.60.60.1 255.255.255.252
+no shutdown
+exit
+
+ip route 50.50.50.0 255.255.255.252 Serial0/0/1 1
+ip route 5.5.5.5 255.255.255.255 Serial0/0/1 1
+ip route 60.60.60.0 255.255.255.252 Serial0/1/1 1
+ip route 6.6.6.6 255.255.255.255 Serial0/1/1 1
+ip route 30.30.30.0 255.255.255.252 Serial0/1/0 1
+ip route 4.4.4.4 255.255.255.255 Serial0/1/0 1
+ip route 10.10.10.0 255.255.255.252 Serial0/0/0 1
+ip route 3.3.3.3 255.255.255.255 Serial0/0/0 1
+
+router ospf 1
+ router-id 1.1.1.1
+ auto-cost reference-bandwidth 10000
+ network 1.1.1.1 0.0.0.0 area 0
+ network 10.10.10.0 0.0.0.3 area 0
+ network 30.30.30.0 0.0.0.3 area 0
+ network 50.50.50.0 0.0.0.3 area 0
+ network 60.60.60.0 0.0.0.3 area 0
+ area 0 authentication message-digest
+exit
+
+interface Serial0/0/0
+ description Connection to ROUTER_HAM_1
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ ip ospf priority 50
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/0/1
+ description Connection to ROUTER_TGA_1
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ ip ospf priority 50
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/1/0
+ description Connection to ROUTER_HAM_2
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/1/1
+ description Connection to ROUTER_TGA_2
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+
+
+##############################################################
+# VODAFONE Router
+##############################################################
+
+no ip domain-lookup
+ip domain-name VODAFONE.com
+hostname VODAFONE_ROUTER
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+security passwords min-length 8
+username admin secret cisco123
+line vty 0 15
+login local
+transport input ssh
+exit
+service password-encryption
+ssh version 2
+banner motd % Welcome to VODAFONE. Unauthorized Access is Prohibited %
+crypto key generate rsa general-keys modulus 2048
+
+
+interface serial0/0/0
+description Connection to Router_HAM_2
+ip address 40.40.40.1 255.255.255.252
+no shutdown
+exit
+
+interface serial0/0/1
+description Connection to Router_TGA_2
+ip address 80.80.80.1 255.255.255.252
+no shutdown
+exit
+
+interface serial0/1/0
+description Connection to Router_HAM_1
+ip address 20.20.20.1 255.255.255.252
+no shutdown
+exit
+
+interface serial0/1/1
+description Connection to Router_TGA_1
+ip address 70.70.70.1 255.255.255.252
+no shutdown
+exit
+
+ip route 40.40.40.0 255.255.255.252 Serial0/0/0
+ip route 4.4.4.4 255.255.255.255 Serial0/0/0
+ip route 20.20.20.0 255.255.255.252 Serial0/1/0
+ip route 3.3.3.3 255.255.255.255 Serial0/1/0
+ip route 70.70.70.0 255.255.255.252 Serial0/1/1
+ip route 5.5.5.5 255.255.255.255 Serial0/1/1
+ip route 80.80.80.0 255.255.255.252 Serial0/0/1
+ip route 6.6.6.6 255.255.255.255 Serial0/0/1
+
+router ospf 1
+ router-id 2.2.2.2
+ auto-cost reference-bandwidth 10000
+ network 40.40.40.0 0.0.0.3 area 0
+ network 80.80.80.0 0.0.0.3 area 0
+ network 20.20.20.0 0.0.0.3 area 0
+ network 70.70.70.0 0.0.0.3 area 0
+ area 0 authentication message-digest
+exit
+
+interface Serial0/0/0
+ description Connection to ROUTER_HAM_2
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ ip ospf priority 50
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/0/1
+ description Connection to ROUTER_TGA_2
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ ip ospf priority 50
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/1/0
+ description Connection to ROUTER_HAM_1
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ ip ospf priority 50
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+interface Serial0/1/1
+ description Connection to ROUTER_TGA_1
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ ip ospf priority 50
+ ip ospf authentication message-digest
+ ip ospf message-digest-key 1 md5 cisco123
+exit
+
+
+
+##############################################################
+# Access Switch Security
+##############################################################
+
+conf t
+no ip domain-lookup
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+service password-encryption
+banner motd # Welcome to RaineCorp. Unauthorized Access is Prohibited. #
+ip domain-name RaineCorp.com
+crypto key generate rsa 
+2048
+ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+username admin privilege 15 secret cisco123
+spanning-tree mode pvst
+ntp authentication-key 1 md5 cisco123
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.30.252 key 1
+
+
+
+interface range FastEthernet0/1-3
+spanning-tree portfast
+spanning-tree bpduguard enable
+switchport port-security
+switchport port-security maximum 2
+switchport port-security violation shutdown
+switchport port-security mac-address sticky
+exit
+
+
+interface range fastethernet 0/4-24
+switchport mode access
+switchport access vlan 199
+shutdown
+exit
+
+
+
+##############################################################
+# Distribution Switch Security
+##############################################################
+
+conf t
+no ip domain-lookup
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+service password-encryption
+banner motd # Welcome to RaineCorp. Unauthorized Access is Prohibited. #
+ip domain-name RaineCorp.com
+crypto key generate rsa 
+2048
+ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+username admin privilege 15 secret cisco123
+spanning-tree mode pvst
+ntp authentication-key 1 md5 cisco123
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.30.252 key 1
+
+
+interface range GigabitEthernet1/0/4-5, GigabitEthernet1/0/9-24, GigabitEthernet1/1/1-4
+shutdown
+switchport access vlan 199
+exit
+
+
+
+##############################################################
+# Core Switch Security
+##############################################################
+
+conf t
+no ip domain-lookup
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+service password-encryption
+banner motd # Welcome to RaineCorp. Unauthorized Access is Prohibited. #
+ip domain-name RaineCorp.com
+crypto key generate rsa 
+2048
+ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+username admin privilege 15 secret cisco123
+spanning-tree mode pvst
+ntp authentication-key 1 md5 cisco123
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.30.252 key 1
+
+
+interface vlan 199
+shutdown
+exit
+
+interface range GigabitEthernet1/0/11-24
+shutdown
+switchport access vlan 199
+exit
+
+interface range GigabitEthernet1/1/1-4
+shutdown
+switchport access vlan 199
+exit
+
+
+
+##############################################################
+# Router Security
+##############################################################
+
+conf t
+no ip domain-lookup
+enable secret cisco123
+line console 0
+password cisco123
+login
+exit
+service password-encryption
+banner motd # Welcome to RaineCorp. Unauthorized Access is Prohibited. #
+ip domain-name RaineCorp.com
+crypto key generate rsa 
+2048
+ip ssh version 2
+line vty 0 15
+transport input ssh
+login local
+username admin privilege 15 secret cisco123
+spanning-tree mode pvst
+ntp authentication-key 1 md5 cisco123
+ntp authenticate
+ntp trusted-key 1
+ntp server 192.168.30.252 key 1
+
+
+interface vlan 199
+shutdown
+exit
+
+
+
+##############################################################
+# TROUBLE SHOOTING
+##############################################################
+
+interface vlan 10
+no ip address
+exit
+interface vlan 20
+no ip address
+exit
+interface vlan 30
+no ip address
+exit
+interface vlan 40
+no ip address
+exit
